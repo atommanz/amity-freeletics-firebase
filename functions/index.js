@@ -1,28 +1,7 @@
 const functions = require("firebase-functions");
-// const { PubSub } = require('@google-cloud/pubsub');
-
 const postService = require('./services/post')
 
-// const pubsub = new PubSub();
 const config = functions.config()
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
-// //
-// exports.helloWorld = functions.https.onRequest(async (request, response) => {
-//     // functions.logger.info("Hello logs!", { structuredData: true });
-//     // response.send("Hello from Firebase!");
-//     console.log("Pubsub Emulator:", process.env.PUBSUB_EMULATOR_HOST);
-
-//     const msg = await pubsub.topic(config.env.topic).publishJSON({
-//         foo: 'bar',
-//         date: new Date()
-//     }, { attr1: 'value' });
-
-//     response.json({
-//         published: msg
-//     })
-
-// });
 
 exports.hashtag = functions.region('asia-southeast2').https.onRequest(async (request, response) => {
     const { hashtagName, size, page } = request.query
