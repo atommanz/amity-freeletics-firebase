@@ -14,8 +14,8 @@ exports.hashtag = functions.region('asia-southeast2').https.onRequest(async (req
     const { body: { hits } } = resElastic
     const postList = hits.hits.map(v => (v._id))
     const formatOut = {
-        totalIndex: hits.hits.length,
-        totalPage: Math.ceil(hits.hits.length / size),
+        totalIndex: hits.total.value,
+        totalPage: Math.ceil(hits.total.value / size),
         currentPage: pageNumber,
         posts: postList,
     }
