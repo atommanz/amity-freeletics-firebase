@@ -3,14 +3,14 @@ const postService = require('./services/post')
 
 const config = functions.config()
 
-exports.hashtag = functions.region('asia-southeast2').https.onRequest(async (request, response) => {
-    const { hashtagName, size, page, content } = request.query
+exports.posts = functions.region('asia-southeast2').https.onRequest(async (request, response) => {
+    const { hashtag, size, page, content } = request.query
     let pageNumber = 1, sizeNumber = 5
     if (page) pageNumber = Number(page)
     if (size) sizeNumber = Number(size)
 
-    if (!hashtagName && !content) return response.json({ success: false, message: 'hashtagName or content search not found' })
-    const resElastic = await postService.getPostList(hashtagName, pageNumber, sizeNumber, content)
+    if (!hashtag && !content) return response.json({ success: false, message: 'hashtag or content search not found' })
+    const resElastic = await postService.getPostList(hashtag, pageNumber, sizeNumber, content)
     const { body: { hits } } = resElastic
     const postList = hits.hits.map(v => (v._id))
     const formatOut = {
