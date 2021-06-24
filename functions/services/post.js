@@ -5,12 +5,12 @@ const findHashtag = require('./findHashtag')
 async function didCreate(eventData) {
     const { posts } = eventData
     const { postId, postedUserId, data, dataType, createdAt, updatedAt, isDeleted } = posts[0]
-   if (dataType !== 'text') {
+    if (dataType !== 'text') {
         throw new Error(`cannot create postType ${dataType} to elastic`)
     }
     const hashTagList = await findHashtag(data.text)
     if (!hashTagList) { return false }
-   
+
     const created = await client.index({
         index: 'post',
         id: postId,
@@ -39,33 +39,26 @@ async function didDelete(postId) {
     return deleted
 }
 
-async function getPostListByHashtag(hashtag, page, size) {
-    const postList = await client.search({
-        index: 'post',
-        body: {
-            from: (page - 1) * size,
-            size,
-            query: {
-                match: { hashtag }
-            },
-            sort: [
-                { updatedAt: 'desc' },
-                { _id: 'asc' }
-            ]
+async function getPostList(hashtag, page, size, content) {
+    let query = {}
+    if (hashtag && content) {
+        query = {
+            bool: {
+                must: []
+            }
         }
-    })
-    return postList
-}
+        if (hashtag) query.bool.must.push({ match: { hashtag } })
+        if (hashtag) query.bool.must.push({ wildcard: { content: `*${content}*` } })
+    }
+    else if (hashtag) query.match = { hashtag }
+    else if (content) query.wildcard = { content: `*${content}*` }
 
-async function getPostListByContent(search, page, size) {
     const postList = await client.search({
         index: 'post',
         body: {
             from: (page - 1) * size,
             size,
-            query: {
-                wildcard: { content:search }
-            },
+            query,
             sort: [
                 { updatedAt: 'desc' },
                 { _id: 'asc' }
@@ -76,5 +69,5 @@ async function getPostListByContent(search, page, size) {
 }
 
 module.exports = {
-    didCreate, didDelete, getPostListByHashtag,getPostListByContent
+    didCreate, didDelete, getPostList
 }
