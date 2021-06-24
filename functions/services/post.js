@@ -57,6 +57,24 @@ async function getPostListByHashtag(hashtag, page, size) {
     return postList
 }
 
+async function getPostListByContent(search, page, size) {
+    const postList = await client.search({
+        index: 'post',
+        body: {
+            from: (page - 1) * size,
+            size,
+            query: {
+                wildcard: { content:search }
+            },
+            sort: [
+                { updatedAt: 'desc' },
+                { _id: 'asc' }
+            ]
+        }
+    })
+    return postList
+}
+
 module.exports = {
-    didCreate, didDelete, getPostListByHashtag
+    didCreate, didDelete, getPostListByHashtag,getPostListByContent
 }

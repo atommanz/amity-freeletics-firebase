@@ -15,7 +15,28 @@ exports.hashtag = functions.region('asia-southeast2').https.onRequest(async (req
     const postList = hits.hits.map(v => (v._id))
     const formatOut = {
         totalIndex: hits.total.value,
-        totalPage: Math.ceil(hits.total.value / size),
+        totalPage: Math.ceil(hits.total.value / sizeNumber),
+        currentPage: pageNumber,
+        posts: postList,
+    }
+    return response.json({ success: true, data: formatOut })
+
+});
+
+exports.content = functions.region('asia-southeast2').https.onRequest(async (request, response) => {
+    const { search, size, page } = request.query
+    console.log('size',size)
+    let pageNumber = 1, sizeNumber = 5
+    if (page) pageNumber = Number(page)
+    if (size) sizeNumber = Number(size)
+
+    if (!search) return response.json({ success: false, message: 'search not found' })
+    const resElastic = await postService.getPostListByContent(search, pageNumber, sizeNumber)
+    const { body: { hits } } = resElastic
+    const postList = hits.hits.map(v => (v._id))
+    const formatOut = {
+        totalIndex: hits.total.value,
+        totalPage: Math.ceil(hits.total.value / sizeNumber),
         currentPage: pageNumber,
         posts: postList,
     }
