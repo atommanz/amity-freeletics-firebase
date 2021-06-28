@@ -1,9 +1,12 @@
 const functions = require("firebase-functions");
 const postService = require('./services/post')
+const checkToken = require('./services/authentication')
 
 const config = functions.config()
 
 exports.posts = functions.region('asia-southeast2').https.onRequest(async (request, response) => {
+    const validToken = await checkToken(request)
+    if(!validToken) return response.json({ success: false, message: 'Unauthorize' })
     const { hashtag, size, page, content } = request.query
     let pageNumber = 1, sizeNumber = 5
     if (page) pageNumber = Number(page)

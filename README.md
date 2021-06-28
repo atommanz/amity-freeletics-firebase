@@ -16,6 +16,7 @@ Open file env.json
 ```
 elasticsearch={Elasticsearch_Endpoint}
 topic={GOOGLE_PUBSUB_TOPIC}
+asc_token={ASC_API_Key}
 ```
 
 ## Development
